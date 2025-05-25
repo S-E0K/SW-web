@@ -1,42 +1,27 @@
-// src/pages/EmotionCategoryPage.jsx
-import ChartEmotion from '../components/ChartEmotion';
 import ChartCategory from '../components/ChartCategory';
+import ChartEmotion from '../components/ChartEmotion';
 import Sidebar from '../components/Sidebar';
 
 export default function EmotionCategoryPage() {
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
-      <Sidebar />
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <div style={{
-          width: '80%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <div style={{
-            width: '45%',
-            textAlign: 'center'
-          }}>
-            <h2>감정별 지출</h2>
-            <div style={{ width: '100%', height: '300px' }}>
-              <ChartEmotion />
-            </div>
-          </div>
-          <div style={{
-            width: '45%',
-            textAlign: 'center'
-          }}>
-            <h2>카테고리별 지출</h2>
-            <div style={{ width: '100%', height: '300px' }}>
-              <ChartCategory />
-            </div>
-          </div>
+      {/* 사이드바 */}
+      <div style={{ width: '200px', backgroundColor: '#222', color: '#fff', padding: '20px' }}>
+        <Sidebar />
+      </div>
+
+      {/* 차트 본문 */}
+      <div style={{ flex: 1, padding: '40px', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+        {/* 감정별 차트 */}
+        <div style={{ width: '50%', maxWidth: '700px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h2 style={{ textAlign: 'center' }}>감정별 지출</h2>
+          <ChartEmotion />
+        </div>
+
+        {/* 카테고리별 차트 */}
+        <div style={{ width: '50%', maxWidth: '700px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <h2 style={{ textAlign: 'center' }}>카테고리별 지출</h2>
+          <ChartCategory />
         </div>
       </div>
     </div>

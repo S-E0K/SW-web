@@ -1,14 +1,13 @@
-// src/App.jsx
-import Sidebar from './components/Sidebar';
+import Sidebar from '../components/Sidebar';
 
-export default function App() {
+export default function DateCategoryPage() {
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <div style={{ width: '200px', backgroundColor: '#222', color: '#fff', padding: '20px' }}>
         <Sidebar />
       </div>
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <h1 style={{ fontSize: '32px' }}>Spenter에 오신 걸 환영합니다!</h1>
+        <h2>날짜별 지출 페이지 (추후 구현 예정)</h2>
       </div>
     </div>
   );
