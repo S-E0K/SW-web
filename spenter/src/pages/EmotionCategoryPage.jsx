@@ -1,27 +1,55 @@
-import ChartCategory from '../components/ChartCategory';
 import ChartEmotion from '../components/ChartEmotion';
+import ChartCategory from '../components/ChartCategory';
 import Sidebar from '../components/Sidebar';
 
 export default function EmotionCategoryPage() {
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      {/* 사이드바 */}
-      <div style={{ width: '200px', backgroundColor: '#222', color: '#fff', padding: '20px' }}>
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      {/* 고정 사이드바 */}
+      <div
+        style={{
+          width: '200px',
+          minWidth: '200px',
+          backgroundColor: '#222',
+          color: '#fff',
+          padding: '20px',
+          boxSizing: 'border-box',
+          flexShrink: 0,
+        }}
+      >
         <Sidebar />
       </div>
 
-      {/* 차트 본문 */}
-      <div style={{ flex: 1, padding: '40px', display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
-        {/* 감정별 차트 */}
-        <div style={{ width: '50%', maxWidth: '700px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h2 style={{ textAlign: 'center' }}>감정별 지출</h2>
-          <ChartEmotion />
-        </div>
-
-        {/* 카테고리별 차트 */}
-        <div style={{ width: '50%', maxWidth: '700px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h2 style={{ textAlign: 'center' }}>카테고리별 지출</h2>
-          <ChartCategory />
+      {/* 메인 콘텐츠 */}
+      <div
+        style={{
+          flex: 1,
+          padding: '40px',
+          overflowY: 'auto',
+          boxSizing: 'border-box',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: '60px',
+            maxWidth: '1400px',
+            width: '100%',
+          }}
+        >
+          <div style={{ flex: '1 1 min(500px, 45%)', minWidth: '350px', height: 'auto' }}>
+            <h2 style={{ textAlign: 'center' }}>감정별 지출</h2>
+            <ChartEmotion />
+          </div>
+          <div style={{ flex: '1 1 min(500px, 45%)', minWidth: '350px', height: 'auto' }}>
+            <h2 style={{ textAlign: 'center' }}>카테고리별 지출</h2>
+            <ChartCategory />
+          </div>
         </div>
       </div>
     </div>

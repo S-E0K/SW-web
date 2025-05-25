@@ -3,7 +3,7 @@ import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -14,7 +14,7 @@ const data = {
   datasets: [
     {
       data: [60000, 20000, 18000, 25000],
-      backgroundColor: ['#FFA53B', '#A379FF', '#40D4C6', '#FF6781'],
+      backgroundColor: ['#FFA500', '#9370DB', '#40E0D0', '#FF69B4'],
       borderWidth: 1,
     },
   ],
@@ -24,9 +24,7 @@ const options = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: {
-      position: 'top',
-    },
+    legend: { position: 'top' },
     datalabels: {
       formatter: (value, context) => {
         const total = context.chart._metasets[0].total;
@@ -40,7 +38,14 @@ const options = {
 
 export default function ChartCategory() {
   return (
-    <div style={{ width: '600px', height: '600px' }}>
+    <div
+      style={{
+        width: '100%',
+        height: 'calc(30vw + 100px)',
+        maxHeight: '500px',
+        minHeight: '300px',
+      }}
+    >
       <Pie data={data} options={options} />
     </div>
   );
