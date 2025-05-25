@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage.jsx';
-import App from './App.jsx';
+import DashboardPage from './pages/DashboardPage.jsx';
 import EmotionCategoryPage from './pages/EmotionCategoryPage.jsx';
 import TransactionsPage from './pages/TransactionsPage.jsx';
 import DateCategoryPage from './pages/DateCategoryPage.jsx';
@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginPage />} /> {/* ✅ 로그인 페이지가 메인 */}
-        <Route path="/dashboard" element={<App />} /> {/* ✅ 로그인 후 이동 */}
+        <Route path="/dashboard" element={<DashboardPage />} /> {/* ✅ 로그인 후 이동 */}
         <Route path="/emotion-category" element={<EmotionCategoryPage />} />
         <Route path="/transactions" element={<TransactionsPage />} />
         <Route path="/date-category" element={<DateCategoryPage />} />

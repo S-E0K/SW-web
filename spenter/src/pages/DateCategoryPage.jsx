@@ -2,6 +2,20 @@ import React, { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 
 const dummySpendingData = {
+  '2025-03-12': [
+    { category: '교통', amount: 1800, emotion: '무감정' },
+    { category: '식비', amount: 9000, emotion: '기쁨' },
+  ],
+  '2025-03-25': [
+    { category: '문화', amount: 15000, emotion: '스트레스' },
+  ],
+  '2025-04-02': [
+    { category: '식비', amount: 11000, emotion: '기쁨' },
+    { category: '쇼핑', amount: 22000, emotion: '충동' },
+  ],
+  '2025-04-15': [
+    { category: '기타', amount: 3000, emotion: '짜증' },
+  ],
   '2025-05-24': [
     { category: '식비', amount: 12000, emotion: '기쁨' },
     { category: '문화', amount: 8000, emotion: '충동' },
@@ -10,6 +24,7 @@ const dummySpendingData = {
     { category: '교통', amount: 3300, emotion: '짜증' },
   ],
 };
+
 
 export default function DateCategoryPage() {
   const today = new Date();

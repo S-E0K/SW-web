@@ -1,25 +1,32 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const dummyUsers = [
-  { id: 'user1', username: '지원이', password: '1234' },
-  { id: 'testuser', username: '홍길동', password: 'abcd' },
-];
-
 export default function LoginPage() {
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = dummyUsers.find(u => u.id === id && u.password === pw);
-    if (user) {
-      localStorage.setItem('loggedInUsername', user.username); // 로그인 사용자 저장
-      navigate('/dashboard'); // 대시보드로 이동
-    } else {
-      setMessage('ID 또는 비밀번호가 올바르지 않습니다.');
+
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, password: pw }),
+      });
+
+      const result = await res.json();
+
+      if (res.status === 200 && result.username) {
+        localStorage.setItem('loggedInUsername', result.username);
+        navigate('/dashboard');
+      } else {
+        setMessage(result.message || 'ID 또는 비밀번호가 올바르지 않습니다.');
+      }
+    } catch (err) {
+      setMessage('서버 오류가 발생했습니다.');
     }
   };
 
@@ -35,8 +42,11 @@ export default function LoginPage() {
           <button type="button" style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}>
             ID/PW 찾기
           </button>
-          <button type="button" style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}
-            onClick={() => navigate('/register')}>
+          <button
+            type="button"
+            style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}
+            onClick={() => navigate('/register')}
+          >
             회원가입
           </button>
         </div>
