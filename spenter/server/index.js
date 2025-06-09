@@ -129,6 +129,7 @@ app.post('/api/ai-transaction', async (req, res) => {
         - 문장에 감정 표현이 전혀 없으면, 반드시 "중립"으로 설정하세요.
     3) use_place (사용 장소)
     4) use_category (사용 카테고리)
+        - 문장에 사용 카테고리가 될 만한게 없으면 '기타'로 설정하세요.
     5) credit (금액, 숫자만)
     6) credit_date (사용 날짜, 반드시 YYYY-MM-DD 형식)
 
