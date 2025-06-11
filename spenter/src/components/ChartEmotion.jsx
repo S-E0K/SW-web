@@ -12,13 +12,13 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 export default function ChartEmotion({
-                                         userId,
-                                         year,            // 부모로부터 받은 연도
-                                         month,           // 부모로부터 받은 월
-                                         onSelect,
-                                         onDateChange,    // 연·월 변경 시 호출
-                                         height = '420px'
-                                     }) {
+    userId,
+    year,            // 부모로부터 받은 연도
+    month,           // 부모로부터 받은 월
+    onSelect,
+    onDateChange,    // 연·월 변경 시 호출
+    height = '420px'
+}) {
     const chartRef = useRef(null);
     const [calendarData, setCalendarData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function ChartEmotion({
 
     // 2) 연·월 옵션
     const today = new Date();
-    const years  = Array.from({ length: 5 }, (_, i) => today.getFullYear() - i);
+    const years = Array.from({ length: 5 }, (_, i) => today.getFullYear() - i);
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
     // 3) summary 계산 (props.year, props.month 사용)
@@ -79,8 +79,8 @@ export default function ChartEmotion({
             .flatMap(([, arr]) => (Array.isArray(arr) ? arr : []))
             .filter(item => item.emotion === emotion)
             .map(item => ({
-                date:   item.date,
-                place:  item.use_place || '장소 없음',
+                date: item.date,
+                place: item.use_place || '장소 없음',
                 amount: item.amount,
                 category: item.use_category || '카테고리 없음'
             }));
@@ -90,39 +90,39 @@ export default function ChartEmotion({
 
     // 5) chart.js 데이터 & 옵션
     const data = {
-        labels:   summary.map(d => d.emotion),
+        labels: summary.map(d => d.emotion),
         datasets: [{
-            data:           summary.map(d => d.total),
-            backgroundColor:[
-                '#FF6384','#36A2EB','#FFCE56','#B0E0E6','#A52A2A','#7FFFD4'
+            data: summary.map(d => d.total),
+            backgroundColor: [
+                '#FF6384', '#36A2EB', '#FFCE56', '#B0E0E6', '#A52A2A', '#7FFFD4'
             ],
-            borderWidth:    1
+            borderWidth: 1
         }]
     };
 
     const options = {
-        responsive:          true,
+        responsive: true,
         maintainAspectRatio: false,
         plugins: {
             title: {
                 display: true,
-                text:    '감정별 지출 비율',
-                align:   'center',
-                font:    { size: 22 },
+                text: '감정별 지출 비율',
+                align: 'center',
+                font: { size: 22 },
                 padding: { bottom: 12 }
             },
             legend: {
                 position: 'top',
-                align:    'center',
-                labels:   { font: { size: 18 }, padding: 8 }
+                align: 'center',
+                labels: { font: { size: 18 }, padding: 8 }
             },
             datalabels: {
                 color: 'white',
-                font:  { weight: 'bold', size: 14 },
+                font: { weight: 'bold', size: 14 },
                 formatter: (value, ctx) => {
-                    const arr   = ctx.chart.data.datasets[0].data;
-                    const total = arr.reduce((a,b) => a + b, 0);
-                    return total ? `${((value/total)*100).toFixed(1)}%` : '';
+                    const arr = ctx.chart.data.datasets[0].data;
+                    const total = arr.reduce((a, b) => a + b, 0);
+                    return total ? `${((value / total) * 100).toFixed(1)}%` : '';
                 }
             },
             tooltip: {

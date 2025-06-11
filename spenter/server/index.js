@@ -264,34 +264,6 @@ app.post('/api/ai-transaction', async (req, res) => {
     }
 });
 
-
-
-// ─────────────────────────────────────────────────────────────────
-// (1) 감정별 지출 합계 조회 API
-//   - 요청: GET /api/chart/emotion?id=<사용자ID>
-//   - 반환 예시: [ { emotion: '기쁨', total: 16000 }, { emotion: '슬픔', total: 15000 }, … ]
-// ─────────────────────────────────────────────────────────────────
-app.get('/api/chart/emotion', async (req, res) => {
-    try {
-        const userId = req.query.id;
-        if (!userId) {
-            return res.status(400).json({ message: 'id 파라미터가 필요합니다.' });
-        }
-
-        const [rows] = await db.query(
-            `SELECT emotion, SUM(credit) AS total
-            FROM ai_transactional
-            WHERE id = ?
-            GROUP BY emotion`,
-            [userId]
-        );
-        return res.json(rows);
-    } catch (err) {
-        console.error('Error GET /api/chart/emotion:', err);
-        return res.status(500).json({ message: '서버 오류' });
-    }
-});
-
 // ─────────────────────────────────────────────────────────────────
 // (2) 카테고리별 지출 합계 조회 API
 //   - 요청: GET /api/chart/category?id=<사용자ID>
@@ -371,16 +343,16 @@ app.get('/api/chart/calendar', async (req, res) => {
 //    GET /api/chart/emotion?id=<userId>&year=2025&month=6
 // ─────────────────────────────────────────────────────────────────
 app.get('/api/chart/emotion', async (req, res) => {
-  const { id, year, month } = req.query;
-  if (!id || !year || !month) {
-    return res
-      .status(400)
-      .json({ error: 'id, year, month 파라미터가 모두 필요합니다.' });
-  }
+    const { id, year, month } = req.query;
+    if (!id || !year || !month) {
+        return res
+            .status(400)
+            .json({ error: 'id, year, month 파라미터가 모두 필요합니다.' });
+    }
 
-  try {
-    const [rows] = await db.query(
-      `
+    try {
+        const [rows] = await db.query(
+            `
       SELECT emotion, SUM(credit) AS total
       FROM ai_transactional
       WHERE id = ?
@@ -388,13 +360,13 @@ app.get('/api/chart/emotion', async (req, res) => {
         AND MONTH(credit_date) = ?
       GROUP BY emotion
       `,
-      [id, year, month]
-    );
-    res.json(rows);
-  } catch (err) {
-    console.error('Error GET /api/chart/emotion:', err);
-    res.status(500).json({ error: '서버 오류' });
-  }
+            [id, year, month]
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error('Error GET /api/chart/emotion:', err);
+        res.status(500).json({ error: '서버 오류' });
+    }
 });
 
 // ─────────────────────────────────────────────────────────────────
@@ -402,16 +374,16 @@ app.get('/api/chart/emotion', async (req, res) => {
 //    GET /api/chart/emotion/detail?id=<userId>&emotion=<감정>&year=2025&month=6
 // ─────────────────────────────────────────────────────────────────
 app.get('/api/chart/emotion/detail', async (req, res) => {
-  const { id, emotion, year, month } = req.query;
-  if (!id || !emotion || !year || !month) {
-    return res
-      .status(400)
-      .json({ error: 'id, emotion, year, month 파라미터가 모두 필요합니다.' });
-  }
+    const { id, emotion, year, month } = req.query;
+    if (!id || !emotion || !year || !month) {
+        return res
+            .status(400)
+            .json({ error: 'id, emotion, year, month 파라미터가 모두 필요합니다.' });
+    }
 
-  try {
-    const [rows] = await db.query(
-      `
+    try {
+        const [rows] = await db.query(
+            `
       SELECT credit_date AS date, use_place, credit
       FROM ai_transactional
       WHERE id = ?
@@ -420,13 +392,13 @@ app.get('/api/chart/emotion/detail', async (req, res) => {
         AND MONTH(credit_date) = ?
       ORDER BY credit_date
       `,
-      [id, emotion, year, month]
-    );
-    res.json(rows);
-  } catch (err) {
-    console.error('Error GET /api/chart/emotion/detail:', err);
-    res.status(500).json({ error: '서버 오류' });
-  }
+            [id, emotion, year, month]
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error('Error GET /api/chart/emotion/detail:', err);
+        res.status(500).json({ error: '서버 오류' });
+    }
 });
 
 
@@ -435,15 +407,15 @@ app.get('/api/chart/emotion/detail', async (req, res) => {
 //    GET /api/spending/monthly?id=<userId>
 // ==================================================================
 app.get('/api/spending/monthly', async (req, res) => {
-  const userId = req.query.id;
-  if (!userId) {
-    return res.status(400).json({ error: 'userId (login.id) 가 필요합니다.' });
-  }
+    const userId = req.query.id;
+    if (!userId) {
+        return res.status(400).json({ error: 'userId (login.id) 가 필요합니다.' });
+    }
 
-  try {
-    // 여기서 pool.query가 아니라 db.query를 사용합니다.
-    const [rows] = await db.query(
-      `
+    try {
+        // 여기서 pool.query가 아니라 db.query를 사용합니다.
+        const [rows] = await db.query(
+            `
       SELECT
         DATE_FORMAT(credit_date, '%Y-%m') AS month,
         SUM(credit) AS amount
@@ -452,14 +424,19 @@ app.get('/api/spending/monthly', async (req, res) => {
       GROUP BY month
       ORDER BY month;
       `,
-      [userId]
-    );
-    return res.json(rows);
-  } catch (err) {
-    console.error('월별 지출 조회 실패', err);
-    return res.status(500).json({ error: '월별 지출 조회 중 오류가 발생했습니다.' });
-  }
+            [userId]
+        );
+        return res.json(rows);
+    } catch (err) {
+        console.error('월별 지출 조회 실패', err);
+        return res.status(500).json({ error: '월별 지출 조회 중 오류가 발생했습니다.' });
+    }
 });
+
+
+
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

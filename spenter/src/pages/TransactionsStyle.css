@@ -1,6 +1,5 @@
 /* src/pages/TransactionsStyle.css */
 
-
 /* =========================================================== */
 /* 1. 공통 레이아웃 2열로 분할: 사이드바 + 콘텐츠 */
 /* =========================================================== */
@@ -19,10 +18,9 @@
 }
 
 /* =========================================================== */
-/* 2. Transactions-container 상단 행
+/* 2. Transactions-container 상단 행 */
 /* =========================================================== */
 
-/* --- 상단 행: 요약 박스 --- */
 .summary-row {
     display: flex;
     flex-direction: row;
@@ -63,7 +61,6 @@
     font-weight: bold;
 }
 
-
 /* =========================================================== */
 /* --- 입출금 내역/거래 내역 리스트 CSS --- */
 /* =========================================================== */
@@ -99,13 +96,15 @@
 
 .Transactions-list-box {
     border-top: 1px solid #ccc;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-
-/* 그리드를 사용하여 열 정렬 (날짜, 카테고리, 세부사항, 금액, 동작) */
+/* 그리드를 사용하여 열 정렬 (날짜, 카테고리, 세부사항, 감정, 금액, 동작) */
 .Transactions-box-row {
     display: grid;
-    grid-template-columns: 120px 140px 1fr 100px 80px;
+    /* 날짜 | 카테고리 | 세부사항 | 감정 | 금액 | 동작 */
+    grid-template-columns: 200px 140px 1fr 200px 120px 65px;
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #ddd;
@@ -113,10 +112,32 @@
 
 .Transactions-box-row span {
     font-size: 0.9rem;
+    padding: 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.income-row .Tr-amount {
-    color: #2e7d32;
+
+/* 그리드를 사용하여 열 정렬 (날짜, 카테고리, 세부사항, 감정, 금액, 동작) */
+.Transactions-box-rowIncome {
+    display: grid;
+    /* 날짜 | 카테고리 | 세부사항 | 감정 | 금액 | 동작 */
+    grid-template-columns: 200px 140px 1fr 120px 65px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 감정 컬럼 스타일 */
+.Transactions-box-row .Tr-emotion,
+.Transactions-box-row span:nth-child(4) {
+    text-align: center;
+    color: #374151;
+}
+
+.Transactions-box-rowIncome.income-row .Tr-amount {
+    color: #27ae60;
 }
 
 .expense-row .Tr-amount {
@@ -136,54 +157,3 @@
     cursor: pointer;
     font-size: 1rem;
 }
-
-/* =========================================================== */
-/* --- 월별 AI 피드백 요약 --- */
-/* =========================================================== */
-.monthly-feedback-container {
-    background-color: #fff3e0;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 30px;
-}
-
-.monthly-feedback-container h2 {
-    font-size: 1.2rem;
-    margin-bottom: 12px;
-}
-
-.feedback-summary-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.feedback-summary-list li {
-    margin-bottom: 8px;
-    font-size: 0.95rem;
-}
-
-/* =========================================================== */
-/* --- 이번 달 피드백 상세 --- */
-/* =========================================================== */
-.detail-feedback-container {
-    background-color: #e8eaf6;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 30px;
-}
-
-.detail-feedback-container h2 {
-    font-size: 1.2rem;
-    margin-bottom: 12px;
-}
-
-.feedback-detail-box {
-    background-color: #ffffff;
-    border: 1px solid #c5cae9;
-    border-radius: 6px;
-    padding: 12px;
-    min-height: 100px;
-    font-size: 0.95rem;
-    color: #424242;
-}
-

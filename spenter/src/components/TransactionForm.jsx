@@ -1,144 +1,231 @@
 // src/components/TransactionForm.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './TransactionForm.css';
 
+// Danh sách cảm xúc
+const EMOTIONS = [
+  { key: 'joy', label: '기쁨' },
+  { key: 'sad', label: '슬픔' },
+  { key: 'stress', label: '스트레스' },
+  { key: 'impulse', label: '충동' },
+  { key: 'neutral', label: '중립' },
+  { key: 'angry', label: '화남' },
+];
+
 const TransactionForm = ({ initialData = null, onSubmit, onCancel }) => {
-  // === 폼 입력 필드 상태 관리 ===
-  const [type, setType] = useState('expense'); // 'expense' 또는 'income'
+  // State các trường form
   const [category, setCategory] = useState('');
   const [detail, setDetail] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
-  const [memo, setMemo] = useState('');
+  const [emotionKey, setEmotionKey] = useState('');    // key như 'joy','sad',...
+  const [showEmotionList, setShowEmotionList] = useState(false);
 
-  // initialData(편집 모드) 값이 있을 때, 해당 데이터를 상태에 세팅
+  // === Cho drag modal ===
+  const modalRef = useRef(null);
+  const [dragging, setDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [modalPos, setModalPos] = useState({ top: '50%', left: '50%' });
+
+  // Prefill hoặc reset khi initialData thay đổi
   useEffect(() => {
-    if (initialData) {
-      setType(initialData.type || 'expense');
+    if (initialData && initialData.id != null) {
       setCategory(initialData.category || '');
       setDetail(initialData.detail || '');
-      setAmount(initialData.amount || '');
+      setAmount(
+        initialData.amount != null ? String(initialData.amount) : ''
+      );
       setDate(initialData.date || '');
-      setMemo(initialData.memo || '');
+      // initialData.emotion là key tiếng Anh
+      setEmotionKey(initialData.emotion || '');
     } else {
-      // 새로운 거래 추가 모드라면, 모든 필드를 초기화
-      setType('expense');
       setCategory('');
       setDetail('');
       setAmount('');
       setDate('');
-      setMemo('');
+      setEmotionKey('');
     }
-  }, [initialData]);
+    // Đặt lại vị trí mỗi khi mở modal mới
+    setModalPos({ top: '50%', left: '50%' });
+  }, [initialData?.id]);
 
-  // === 폼 제출 처리 함수 ===
+  const handleMouseDown = (e) => {
+    if (modalRef.current) {
+      const rect = modalRef.current.getBoundingClientRect();
+      setOffset({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      setDragging(true);
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragging) {
+      e.preventDefault();
+      setModalPos({
+        top: `${e.clientY - offset.y}px`,
+        left: `${e.clientX - offset.x}px`
+      });
+    }
+  };
+
+  const handleMouseUp = () => setDragging(false);
+
+  useEffect(() => {
+    if (dragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [dragging, offset]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 입력된 데이터를 합쳐서 부모 컴포넌트의 onSubmit 함수 호출
+    if (
+      !detail.trim() ||
+      !category.trim() ||
+      !amount.trim() ||
+      !date ||
+      !emotionKey
+    ) {
+      alert('필수 항목(사용처, 카테고리, 금액, 날짜, 감정)을 모두 입력해주세요.');
+      return;
+    }
+    // Lấy nhãn Hàn của emotion
+    const selectedEmotion = EMOTIONS.find(e => e.key === emotionKey);
     onSubmit({
-      type,
-      category,
-      detail,
-      amount,
+      category: category.trim(),
+      detail: detail.trim(),
+      amount: parseInt(amount, 10),
       date,
-      memo,
+      emotionKor: selectedEmotion?.label,  // ví dụ '기쁨', '슬픔',...
     });
   };
 
   return (
     <div className="transaction-form-backdrop">
-      <div className="transaction-form-modal">
-        <h2>내역 수정</h2>
-        <form onSubmit={handleSubmit} className="transaction-form">
-          {/* 라디오 버튼: 수입/지출 선택 */}
-          <div className="form-group radio-group">
-            <label>
-              <input
-                type="radio"
-                name="type"
-                value="expense"
-                checked={type === 'expense'}
-                onChange={() => setType('expense')}
-              />
-              지출
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="type"
-                value="income"
-                checked={type === 'income'}
-                onChange={() => setType('income')}
-              />
-              수입
-            </label>
-          </div>
+      <div
+        className="transaction-form-modal"
+        ref={modalRef}
+        style={{
+          top: modalPos.top,
+          left: modalPos.left,
+          transform:
+            modalPos.top === '50%' && modalPos.left === '50%'
+              ? 'translate(-50%, -50%)'
+              : 'none',
+          position: 'absolute',
+          cursor: dragging ? 'grabbing' : 'default',
+        }}
+      >
+        {/* Header draggable */}
+        <div
+          className="modal-header"
+          onMouseDown={handleMouseDown}
+          style={{ cursor: 'grab' }}
+        >
+          <h2 className="modal-title">
+            {initialData?.id != null ? '지출 수정' : '지출 추가'}
+          </h2>
+        </div>
 
-          {/* 내역(거래 상세) 입력 필드 */}
+        <form onSubmit={handleSubmit} className="transaction-form">
           <div className="form-group">
-            <label>내역</label>
+            <label>사용처</label>
             <input
               type="text"
               value={detail}
-              onChange={(e) => setDetail(e.target.value)}
-              placeholder="예: 버스비, 월급 등"
+              onChange={e => setDetail(e.target.value)}
+              onMouseDown={e => e.stopPropagation()}
+              placeholder="예: 편의점, 영화관 등"
               required
             />
           </div>
 
-          {/* 카테고리 입력 필드 */}
           <div className="form-group">
             <label>카테고리</label>
             <input
               type="text"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={e => setCategory(e.target.value)}
+              onMouseDown={e => e.stopPropagation()}
               placeholder="예: 교통/차량, 식비 등"
               required
             />
           </div>
 
-          {/* 금액 입력 필드 */}
           <div className="form-group">
             <label>금액</label>
             <input
               type="number"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={e => setAmount(e.target.value)}
+              onMouseDown={e => e.stopPropagation()}
               placeholder="예: 4000"
               required
             />
           </div>
 
-          {/* 날짜 입력 필드 */}
           <div className="form-group">
             <label>날짜</label>
             <input
               type="date"
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={e => setDate(e.target.value)}
+              onMouseDown={e => e.stopPropagation()}
               required
             />
           </div>
 
-          {/* 메모 입력 필드 */}
           <div className="form-group">
-            <label>메모</label>
-            <input
-              type="text"
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              placeholder="예: 버스비"
-            />
+            <label>감정</label>
+            <div
+              className="emotion-selector"
+              onClick={e => { e.stopPropagation(); setShowEmotionList(p => !p); }}
+            >
+              {emotionKey
+                ? EMOTIONS.find(e => e.key === emotionKey)?.label
+                : '감정을 선택하세요'}
+            </div>
+            {showEmotionList && (
+              <ul
+                className="emotion-list"
+                onMouseDown={e => e.stopPropagation()}
+              >
+                {EMOTIONS.map(emo => (
+                  <li
+                    key={emo.key}
+                    className={
+                      emo.key === emotionKey
+                        ? 'emotion-item selected'
+                        : 'emotion-item'
+                    }
+                    onClick={() => {
+                      setEmotionKey(emo.key);
+                      setShowEmotionList(false);
+                    }}
+                  >
+                    {emo.label}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
-          {/* 제출 및 취소 버튼 */}
           <div className="form-actions">
             <button type="submit" className="submit-btn">
-              수정
+              등록
             </button>
-            <button type="button" className="cancel-btn" onClick={onCancel}>
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={onCancel}
+            >
               취소
             </button>
           </div>

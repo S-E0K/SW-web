@@ -48,7 +48,6 @@ export default function App() {
                         <ProtectedRoute>
                             <DashboardPage
                                 userId={userIdFromStorage}
-                                transactions={transactions}
                             />
                         </ProtectedRoute>
                     }
@@ -58,8 +57,6 @@ export default function App() {
                     element={
                         <ProtectedRoute>
                             <TransactionsPage
-                                transactions={transactions}
-                                setTransactions={setTransactions}
                             />
                         </ProtectedRoute>
                     }

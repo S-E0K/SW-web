@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import ChartEmotion from '../components/ChartEmotion';
 import ChartCategory from '../components/ChartCategory';
 import './DashboardStyle.css';
 
-export default function EmotionCategoryPage({userId}) {
+export default function EmotionCategoryPage({ userId }) {
     const navigate = useNavigate();
 
     // 로그인 체크
@@ -51,12 +51,21 @@ export default function EmotionCategoryPage({userId}) {
             })
             .then(rows => {
                 // rows: [ { date, use_place, credit }, … ]
-                const details = rows.map(r => ({
-                    // r.credit_date: "2025-04-01" (MySQL DATE → JS string)
-                    date: r.date.split('T')[0],   // → "2025-04-01"
-                    place:  r.use_place,
-                    amount: r.credit
-                }));
+                const details = rows.map(r => {
+                    // 날짜를 하루 뒤로 이동시켜 YYYY-MM-DD로 포맷
+                    const d = new Date(r.date);            // r.date가 ISO 문자열이라 가정
+                    d.setDate(d.getDate());                // 날짜로 받기
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const date = `${yyyy}-${mm}-${dd}`;    // 포맷된 날짜
+
+                    return {
+                        date,
+                        place: r.use_place,
+                        amount: r.credit
+                    };
+                });
                 setDetailList(details);
             })
             .catch(err => {
@@ -65,11 +74,16 @@ export default function EmotionCategoryPage({userId}) {
             });
     }, [userId, selectedEmotion, year, month]);
 
+
+
+
+
+    
     return (
-        <div style={{display: 'flex', height: '100vh'}}>
+        <div style={{ display: 'flex', height: '100vh' }}>
             {/* 사이드바 */}
             <div className="sidebar">
-                <Sidebar/>
+                <Sidebar />
             </div>
 
             {/* 메인 */}
@@ -83,10 +97,10 @@ export default function EmotionCategoryPage({userId}) {
                 backgroundColor: '#F5E2C2',
                 overflowX: 'hidden',
             }}>
-                <h2 style={{margin: 0}}>감정/카테고리별 지출 통계</h2>
+                <h2 style={{ margin: 0 }}>감정/카테고리별 지출 통계</h2>
 
                 {/* 상단 파이 차트 영역 */}
-                <div style={{display: 'flex', gap: '40px', flex: 1}}>
+                <div style={{ display: 'flex', gap: '40px', flex: 1 }}>
                     {/* 감정별 */}
                     <div style={{
                         flex: '1 1 400px',
@@ -98,7 +112,7 @@ export default function EmotionCategoryPage({userId}) {
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                         overflow: 'hidden',
                     }}>
-                        <h3 style={{textAlign: 'center', marginBottom: '10px'}}>
+                        <h3 style={{ textAlign: 'center', marginBottom: '10px' }}>
                             감정별 지출 비율
                         </h3>
                         <ChartEmotion
@@ -122,7 +136,7 @@ export default function EmotionCategoryPage({userId}) {
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                         overflow: 'hidden',
                     }}>
-                        <h3 style={{textAlign: 'center', marginBottom: '10px'}}>
+                        <h3 style={{ textAlign: 'center', marginBottom: '10px' }}>
                             카테고리별 지출 비율
                         </h3>
                         <ChartCategory
@@ -146,12 +160,12 @@ export default function EmotionCategoryPage({userId}) {
                 }}>
                     {selectedEmotion ? (
                         <>
-                            <h3 style={{margin: '0 0 8px'}}>
+                            <h3 style={{ margin: '0 0 8px' }}>
                                 “{selectedEmotion}” 지출 상세 ({year}년 {month}월)
                             </h3>
-                            <ul style={{margin: 0, paddingLeft: 20}}>
-                                {detailList.map(({date, place, amount}, i) => (
-                                    <li key={i} style={{marginBottom: 4}}>
+                            <ul style={{ margin: 0, paddingLeft: 20 }}>
+                                {detailList.map(({ date, place, amount }, i) => (
+                                    <li key={i} style={{ marginBottom: 4 }}>
                                         {date} / {place} / ₩{amount.toLocaleString()}
                                     </li>
                                 ))}
