@@ -51,12 +51,21 @@ export default function EmotionCategoryPage({userId}) {
             })
             .then(rows => {
                 // rows: [ { date, use_place, credit }, … ]
-                const details = rows.map(r => ({
-                    // r.credit_date: "2025-04-01" (MySQL DATE → JS string)
-                    date: r.date.split('T')[0],   // → "2025-04-01"
-                    place:  r.use_place,
-                    amount: r.credit
-                }));
+                   const details = rows.map(r => {
+                       // 날짜를 하루 뒤로 이동시켜 YYYY-MM-DD로 포맷
+                       const d = new Date(r.date);            // r.date가 ISO 문자열이라 가정
+                       d.setDate(d.getDate());                // 날짜로 받기
+                       const yyyy = d.getFullYear();
+                       const mm   = String(d.getMonth() + 1).padStart(2, '0');
+                       const dd   = String(d.getDate()     ).padStart(2, '0');
+                       const date = `${yyyy}-${mm}-${dd}`;    // 포맷된 날짜
+
+                       return {
+                         date,                                // 하루 뒤 날짜
+                         place:  r.use_place,
+                         amount: r.credit
+                       };
+                   });
                 setDetailList(details);
             })
             .catch(err => {
